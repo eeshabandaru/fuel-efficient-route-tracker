@@ -128,3 +128,25 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Node.js dependencies
+node_modules/
+package-lock.json
+
+# Python dependencies
+venv/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# IDE and OS files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Build output
+dist/
+build/
