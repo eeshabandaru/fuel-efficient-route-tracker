@@ -59,5 +59,3 @@ exports.getProfile = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch user profile', details: error.message });
   }
 };
-
-module.exports = { register, login, getProfile };
