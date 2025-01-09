@@ -1,10 +1,13 @@
 const express = require('express');
-const { planRoutes } = require('../controllers/routeController');
+const { planRoutes, getRouteById } = require('../controllers/routeController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-// Plan and compare regular and optimized routes
+// Endpoint to plan and compare routes
 router.post('/plan', authMiddleware, planRoutes);
+
+// Endpoint to fetch a saved route by its ID
+router.get('/:id', authMiddleware, getRouteById);
 
 module.exports = router;

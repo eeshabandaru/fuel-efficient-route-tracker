@@ -1,70 +1,48 @@
 const axios = require('axios');
 const Route = require('../models/Route');
 
-// POST /route/plan: Plan and compare routes
+// Plan and compare routes
 exports.planRoutes = async (req, res) => {
   try {
-    const { stops, fuelEfficiency } = req.body;
+    const { stops, fuelEfficiency } = req.body; // Extract stops and fuel efficiency from the request body
 
-    // Fetch the regular route from Geoapify
-    const regularResponse = await axios.post(
-      `https://api.geoapify.com/v1/routeplanner?apiKey=${process.env.GEOAPIFY_API_KEY}`,
-      { mode: 'drive', waypoints: stops }
-    );
-    const regularRoute = regularResponse.data.features[0].properties;
-
-    // Fetch alternative routes from Geoapify
-    const alternativesResponse = await axios.post(
-      `https://api.geoapify.com/v1/routeplanner?apiKey=${process.env.GEOAPIFY_API_KEY}`,
-      { mode: 'drive', waypoints: stops, alternatives: true }
-    );
-    const alternativeRoutes = alternativesResponse.data.features.map((route) => route.properties);
-
-    // Evaluate routes using AI predictions
-    let optimizedRoute = null;
-    let lowestFuelConsumption = Infinity;
-
-    for (const route of alternativeRoutes) {
-      const { distance } = route; // Distance in meters
-      const trafficSeverity = route.traffic_severity || 0.5; // Assume default if missing
-
-      // Predict fuel consumption using AI
-      const aiResponse = await axios.post('http://localhost:8000/predict', {
-        distance: distance / 1000, // Convert to kilometers
-        traffic_severity: trafficSeverity,
-        fuel_efficiency: fuelEfficiency,
-      });
-
-      const fuelConsumption = aiResponse.data.fuel_consumed;
-
-      // Track the most fuel-efficient route
-      if (fuelConsumption < lowestFuelConsumption) {
-        optimizedRoute = route;
-        lowestFuelConsumption = fuelConsumption;
-      }
+    // Validate that at least two stops are provided
+    if (!stops || stops.length < 2) {
+      return res.status(400).json({ error: 'At least two stops are required to plan a route' });
     }
 
-    // Save both routes to the database
+    // Fetch the regular route from the Geoapify API
+    const regularResponse = await axios.post(
+      `https://api.geoapify.com/v1/routing?apiKey=${process.env.GEOAPIFY_API_KEY}`,
+      { mode: 'drive', waypoints: stops.join('|') }
+    );
+    const regularRoute = regularResponse.data.features[0].properties; // Extract route details
+
+    // Save the route to MongoDB
     const savedRoute = await Route.create({
-      userId: req.user.userId,
+      userId: req.user.userId, // Associate the route with the logged-in user
       stops,
       regularRoute,
-      optimizedRoute,
-      optimizedFuelConsumption: lowestFuelConsumption,
     });
 
-    // Respond with both routes and their fuel consumption
-    res.status(200).json({
-      regularRoute: {
-        ...regularRoute,
-        fuelConsumption: regularRoute.distance / fuelEfficiency,
-      },
-      optimizedRoute: {
-        ...optimizedRoute,
-        fuelConsumption: lowestFuelConsumption,
-      },
-    });
+    res.status(201).json({ message: 'Route planned successfully', route: savedRoute });
   } catch (error) {
     res.status(500).json({ error: 'Failed to plan routes', details: error.message });
+  }
+};
+
+// Fetch a saved route by its ID
+exports.getRouteById = async (req, res) => {
+  try {
+    const { id } = req.params; // Extract route ID from request parameters
+    const route = await Route.findById(id); // Retrieve the route from the database
+
+    if (!route) {
+      return res.status(404).json({ error: 'Route not found' }); // Handle case where route doesn't exist
+    }
+
+    res.status(200).json(route);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch route', details: error.message });
   }
 };
