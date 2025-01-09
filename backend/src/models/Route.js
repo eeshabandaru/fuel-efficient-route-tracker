@@ -4,8 +4,9 @@ const mongoose = require('mongoose');
 const RouteSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   stops: { type: Array, required: true }, // List of stops
-  distance: { type: Number, required: true }, // Total route distance
-  geoapifyData: { type: Object }, // Raw Geoapify response
+  regularRoute: { type: Object, required: true }, // Regular route data
+  optimizedRoute: { type: Object, required: true }, // Optimized route data
+  optimizedFuelConsumption: { type: Number, required: true }, // Fuel consumption for optimized route
 });
 
 module.exports = mongoose.model('Route', RouteSchema);

@@ -1,9 +1,10 @@
 const express = require('express');
-const { planRoute } = require('../controllers/routeController');
+const { planRoutes } = require('../controllers/routeController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.post('/plan', authMiddleware, planRoute); // Plan a route
+// Plan and compare regular and optimized routes
+router.post('/plan', authMiddleware, planRoutes);
 
 module.exports = router;
