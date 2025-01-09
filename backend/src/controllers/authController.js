@@ -1,9 +1,17 @@
 const User = require('../models/User'); // Import User model
 const bcrypt = require('bcrypt');       // For password hashing
 const jwt = require('jsonwebtoken');    // For token generation
+const { validationResult } =  require('express-validator');
+require('dotenv').config();
 
 // POST /register: Register a new user
 exports.register = async (req, res) => {
+  // Check for validation errors from express-validator
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     const { username, email, password } = req.body;
 
@@ -42,9 +50,12 @@ exports.login = async (req, res) => {
 // GET /profile: Fetch the user profile
 exports.getProfile = async (req, res) => {
   try {
+    // req.user.userId should be set by the authMiddleware after json token verification
     const user = await User.findById(req.user.userId).select('-password'); // Exclude password
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    
     res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch user profile' });
+    res.status(500).json({ error: 'Failed to fetch user profile', details: error.message });
   }
 };
