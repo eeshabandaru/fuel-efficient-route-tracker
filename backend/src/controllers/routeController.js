@@ -11,12 +11,15 @@ exports.planRoutes = async (req, res) => {
       return res.status(400).json({ error: 'At least two stops are required to plan a route' });
     }
 
-    // Fetch the regular route from the Geoapify API
-    const regularResponse = await axios.post(
-      `https://api.geoapify.com/v1/routing?apiKey=${process.env.GEOAPIFY_API_KEY}`,
-      { mode: 'drive', waypoints: stops.join('|') }
-    );
-    const regularRoute = regularResponse.data.features[0].properties; // Extract route details
+    // Build Geoapify URL with query params
+    const url = `https://api.geoapify.com/v1/routing?waypoints=${stops.join('|')}&mode=drive&apiKey=${process.env.GEOAPIFY_API_KEY}`;
+    
+    // Make GET request
+    const regularResponse = await axios.get(url);
+
+    // Extract route details
+    const regularRoute = regularResponse.data.features[0].properties;
+
 
     // Save the route to MongoDB
     const savedRoute = await Route.create({
