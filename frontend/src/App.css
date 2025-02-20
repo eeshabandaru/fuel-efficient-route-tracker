@@ -1,33 +1,54 @@
+/* 
+  App.css Template
+  ----------------
+  This file contains global styles for your application.
+  Update the values below to match your design specifications.
+*/
+
+/* Global container for the app */
 .App {
+  /* TODO: Adjust text alignment, margin, and padding as needed */
   text-align: center;
 }
 
+/* Style for the app logo image */
 .App-logo {
+  /* TODO: Modify the height or other properties as per your design */
   height: 40vmin;
   pointer-events: none;
 }
 
+/* Animation for the logo (optional) */
+/* Remove or modify this section if the design doesn't require a spinning logo */
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
 }
 
+/* Header area of the app */
 .App-header {
+  /* TODO: Update the background color to match your design's color palette */
   background-color: #282c34;
+  /* TODO: Adjust the minimum height, layout, and spacing as needed */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  /* TODO: Modify the font size and other typography settings to suit your design */
   font-size: calc(10px + 2vmin);
+  /* TODO: Change the text color if necessary */
   color: white;
 }
 
+/* Link styling within the app */
 .App-link {
+  /* TODO: Set the color to align with your brand (default is React blue) */
   color: #61dafb;
 }
 
+/* Keyframes for the logo spin animation */
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
