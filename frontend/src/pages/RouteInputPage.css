@@ -1,0 +1,77 @@
+/*
+  RouteInputPage.css
+  ------------------
+  This file handles styling for the Route Input page.
+
+  Instructions:
+    - Style the list of "stops" input fields.
+    - Provide spacing between each stop field.
+    - Style the Add/Remove/Save buttons.
+*/
+
+.route-input-container {
+    /* TODO: Decide layout, max-width, margins, etc. */
+    width: 100%;
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+  }
+  
+  .route-input-container h2 {
+    /* TODO: Headline styling */
+    margin-bottom: 1rem;
+  }
+  
+  .route-form {
+    /* TODO: Decide on flex or block layout */
+  }
+  
+  /* Each stop input group */
+  .stop-group {
+    /* TODO: Provide margin/padding between each stop input */
+    margin-bottom: 1rem;
+  }
+  
+  /* Label for each stop */
+  .stop-group label {
+    /* TODO: Label styling */
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Input field for the stop location */
+  .stop-group input {
+    /* TODO: Input styling (width, padding, etc.) */
+    width: 100%;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    margin-right: 1rem; /* If your remove button is inline */
+  }
+  
+  /* Remove stop button */
+  .stop-group button {
+    /* TODO: Style remove button (e.g., smaller, inline, etc.) */
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+  }
+  
+  /* Button for adding new stop */
+  .route-form button[type="button"] {
+    /* TODO: Style "Add Another Stop" button */
+    cursor: pointer;
+    margin-right: 1rem;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  /* Save Route button */
+  .route-form button[type="submit"] {
+    /* TODO: Style "Save Route" button (color, padding, etc.) */
+    cursor: pointer;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  /* Message for success/failure */
+  .message {
+    /* TODO: Style message text (color, margin, etc.) */
+    margin-top: 1rem;
+  }

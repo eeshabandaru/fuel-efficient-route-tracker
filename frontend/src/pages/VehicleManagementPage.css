@@ -1,0 +1,76 @@
+/*
+  VehicleManagementPage.css
+  -------------------------
+  This file handles styling for the Vehicle Management page.
+
+  Instructions:
+    - Style the form for adding vehicles.
+    - Style the list of existing vehicles (ul or table).
+*/
+
+.vehicle-management-container {
+    /* TODO: Decide layout (centered or full width) */
+    width: 100%;
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+  }
+  
+  .vehicle-management-container h2 {
+    /* TODO: Headline style */
+    margin-bottom: 1rem;
+  }
+  
+  /* Form for adding vehicles */
+  .vehicle-form {
+    /* TODO: Possibly a flex or block layout */
+    margin-bottom: 2rem; /* Separate form from the vehicle list */
+  }
+  
+  .vehicle-form .form-group {
+    /* TODO: Space out each label/input pair */
+    margin-bottom: 1rem;
+  }
+  
+  .vehicle-form label {
+    /* TODO: Label styling */
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  
+  .vehicle-form input {
+    /* TODO: Input styling (width, padding, border, etc.) */
+    width: 100%;
+    padding: 0.5rem;
+    box-sizing: border-box;
+  }
+  
+  /* Add Vehicle button */
+  .vehicle-form button[type="submit"] {
+    /* TODO: Button styling */
+    cursor: pointer;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  /* Vehicle list container */
+  .vehicle-list {
+    /* TODO: Additional styling for the list */
+  }
+  
+  .vehicle-list h3 {
+    /* TODO: Subheadline styling */
+    margin-bottom: 1rem;
+  }
+  
+  .vehicle-list ul {
+    /* TODO: Remove default list styles if needed */
+    list-style: none;
+    padding: 0;
+  }
+  
+  .vehicle-list li {
+    /* TODO: Style each vehicle item (border, background, spacing, etc.) */
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    border-bottom: 1px solid #ccc;
+  }

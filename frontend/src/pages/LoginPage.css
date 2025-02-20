@@ -1,0 +1,69 @@
+/*
+  LoginPage.css
+  -------------
+  This file handles the styling for the Login Page.
+
+  Instructions:
+    - Center the login form on the page or follow your Figma layout.
+    - Style the labels, inputs, and the submit button.
+    - Consider error/success message styling.
+*/
+
+/* Container that holds the entire login page content */
+.login-container {
+    /* TODO: Set a max-width if you want the form to be narrower (e.g., max-width: 400px) */
+    /* TODO: Center it horizontally, e.g., margin: 0 auto; */
+    /* TODO: Add top/bottom padding or margin for spacing */
+    width: 100%;
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 1rem;
+    text-align: center; /* or left, depending on design */
+  }
+  
+  /* Headline styling (e.g., "Login") */
+  .login-container h2 {
+    /* TODO: Choose font size, font weight, color, etc. */
+    margin-bottom: 1rem;
+  }
+  
+  /* The form element itself */
+  .login-form {
+    /* TODO: Possibly display: flex; flex-direction: column; if you want stacked fields */
+  }
+  
+  /* Form group for each label + input */
+  .form-group {
+    /* TODO: Add margin to separate each field */
+    margin-bottom: 1rem;
+    text-align: left; /* Typically left-aligned labels */
+  }
+  
+  /* Label styling */
+  .form-group label {
+    /* TODO: Set font-size, color, etc. */
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Input fields (email, password) */
+  .form-group input {
+    /* TODO: Decide on width (e.g., width: 100% for full width) */
+    /* TODO: Add padding, border, etc. */
+    width: 100%;
+    padding: 0.5rem;
+    box-sizing: border-box;
+  }
+  
+  /* The login button */
+  .login-form button[type="submit"] {
+    /* TODO: Choose background color, text color, padding, border-radius, etc. */
+    cursor: pointer;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  /* Message styling (for success or error) */
+  .message {
+    /* TODO: Set color for success (green) or error (red) if needed */
+    margin-top: 1rem;
+  }

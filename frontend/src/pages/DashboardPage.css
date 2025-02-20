@@ -1,0 +1,53 @@
+/*
+  DashboardPage.css
+  -----------------
+  This file handles styling for the Dashboard page.
+
+  Instructions:
+    - Style the container and each metric display (cards, tables, or charts).
+    - Make sure to space out the metric cards or sections nicely.
+*/
+
+.dashboard-container {
+    /* TODO: Decide layout (centered or grid). */
+    width: 100%;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+  }
+  
+  .dashboard-container h2 {
+    /* TODO: Headline styling */
+    margin-bottom: 1rem;
+  }
+  
+  /* Container for the metrics overview (could be a grid or flex) */
+  .metrics-overview {
+    /* TODO: Decide on display: flex or display: grid, gap, etc. */
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows items to wrap on smaller screens */
+  }
+  
+  /* Individual metric card */
+  .metric-card {
+    /* TODO: Add background color, padding, border-radius, etc. */
+    flex: 1 1 200px; /* Example: each card can grow or shrink, min width 200px */
+    border: 1px solid #ccc;
+    padding: 1rem;
+    text-align: center; /* Or left, depending on design */
+  }
+  
+  /* Title for the metric (e.g., CO2 Reduction) */
+  .metric-card h3 {
+    /* TODO: Font-size, margin, color */
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Actual metric value */
+  .metric-card p {
+    /* TODO: Font-size, weight, color, etc. to highlight the value */
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+  }

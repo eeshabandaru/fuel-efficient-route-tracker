@@ -1,0 +1,51 @@
+/* 
+  Navbar.css
+  -----------
+  This file handles the styling for the Navbar component.
+
+  Instructions:
+    - Choose a background color for the navbar (matching your Figma design).
+    - Decide how you want the navbar to be laid out (e.g., flex, grid, etc.).
+    - Style the logo area and the nav links (hover states, active states, etc.).
+*/
+
+/* Container for the entire navbar */
+.navbar {
+    /* TODO: Provide a background color (e.g., #ffffff or a brand color) */
+    /* TODO: Add some padding (e.g., padding: 1rem;) */
+    /* TODO: Decide if you want a border or box-shadow for visual separation */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  /* Logo area (left side) */
+  .navbar-logo {
+    /* TODO: Decide how large the logo should be (width/height if an <img>) */
+    /* TODO: Add margin or padding if needed */
+  }
+  
+  /* Navigation links container (right side) */
+  .navbar-links {
+    /* TODO: Decide if you want a flex or inline layout for the links */
+    /* e.g., display: flex; gap: 1rem; or something similar */
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Individual list items */
+  .navbar-links li {
+    /* TODO: Optionally style the list items (spacing, alignment) */
+  }
+  
+  /* Anchor links inside the navbar */
+  .navbar-links a {
+    /* TODO: Set text color, remove text decoration, etc. */
+    text-decoration: none;
+    color: #000; /* Replace with your brand color or desired text color */
+    /* TODO: Add hover styles */
+  }
+  
