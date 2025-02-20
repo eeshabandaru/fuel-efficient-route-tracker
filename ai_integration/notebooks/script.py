@@ -1,4 +1,4 @@
-# %%
+
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -7,11 +7,11 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.optimizers import Adam
 
-# ================================
-# 🚗 Load and Prepare Datasets
-# ================================
 
-# Load vehicle data containing fuel efficiency and CO₂ emissions info
+# 1. Load and Inspect Datasets
+
+
+# Load vehicle data containing fuel efficiency & CO₂ emissions info
 vehicle_data = pd.read_csv('../data/vehicle data/vehicles.csv')
 
 # Load traffic volume data (historical traffic patterns)
@@ -20,164 +20,195 @@ traffic_volumes = pd.read_csv('../data/traffic data/Traffic_Volumes.csv')
 # Load bottleneck data (high-traffic congestion areas)
 bottlenecks = pd.read_csv('../data/traffic data/Bottlenecks.csv')
 
-# Print first few rows to confirm dataset structure
+# Print samples to confirm dataset structure
 print("Vehicle Data Sample:")
 print(vehicle_data.head())
 
-print("Traffic Volumes Sample:")
+print("\nTraffic Volumes Sample:")
 print(traffic_volumes.head())
 
-print("Bottlenecks Sample:")
+print("\nBottlenecks Sample:")
 print(bottlenecks.head())
 
-# ================================
-# 🛠 Data Cleaning and Processing
-# ================================
 
-# Remove any rows with missing values
+# 2. Data Cleaning and Preprocessing
+
+
+# 2.1 Remove rows with missing values to avoid errors in training
 vehicle_data.dropna(inplace=True)
 traffic_volumes.dropna(inplace=True)
 bottlenecks.dropna(inplace=True)
 
-# Rename columns for consistency and readability
-vehicle_data.rename(columns={
-    'Fuel_Consumption_City': 'city_fuel_efficiency',
-    'Fuel_Consumption_Hwy': 'highway_fuel_efficiency',
-    'CO2_Emissions': 'co2_emissions'
-}, inplace=True)
+# 2.2 Rename vehicle_data columns for consistency
+vehicle_data.rename(
+    columns={
+        'Fuel_Consumption_City': 'city_fuel_efficiency',
+        'Fuel_Consumption_Hwy': 'highway_fuel_efficiency',
+        'CO2_Emissions': 'co2_emissions'
+    },
+    inplace=True
+)
 
-# Compute **combined fuel efficiency** using a weighted average 
-# (55% city driving, 45% highway driving)
+# 2.3 Compute a "combined" fuel efficiency (weighted average of city & highway)
+#     Example weighting: 55% city, 45% highway
 vehicle_data['combined_fuel_efficiency'] = (
     vehicle_data['city_fuel_efficiency'] * 0.55 +
     vehicle_data['highway_fuel_efficiency'] * 0.45
 )
 
-# Normalize traffic congestion severity (scale from 0 to 1)
+# 2.4 Normalize traffic congestion severity (scale from 0 to 1)
 bottlenecks['normalized_traffic_severity'] = (
     bottlenecks['traffic_severity'] / bottlenecks['traffic_severity'].max()
 )
 
-# ================================
-# 🔗 Merge Datasets for Model Training
-# ================================
 
-# Merge traffic volume data with bottleneck congestion severity
+# 3. Merge Datasets for Model Training
+
+
+# 3.1 Merge traffic volume data with bottleneck congestion severity on 'location'
 traffic_data = pd.merge(
     traffic_volumes,
     bottlenecks[['location', 'normalized_traffic_severity']],
     on='location',
-    how='left'  # Use "left" join to retain all traffic data even if bottlenecks are missing
+    how='left'  # Keep all traffic data, add severity where matched
 )
 
-# 🚨 FIX: Merge vehicle data using fuel type, NOT location
-# Vehicles typically do not have specific location-based data, so we link based on fuel type.
+# 3.2 Merge the traffic data with vehicle data on 'Fuel_Type'
+#     Make sure both CSVs have 'Fuel_Type' columns to merge on.
 merged_data = traffic_data.merge(
-    vehicle_data, 
-    on='Fuel_Type',  # Make sure "Fuel_Type" exists in both datasets
-    how='left'  # Keep all traffic records and merge vehicle details where possible
+    vehicle_data,
+    on='Fuel_Type',
+    how='left'  # Keep traffic records, attach vehicle details where possible
 )
 
-# Compute **estimated fuel consumption** using the formula:
-# Fuel Consumption = Distance / Fuel Efficiency
-merged_data['fuel_consumption'] = merged_data['distance'] / merged_data['combined_fuel_efficiency']
+# 3.3 Compute estimated fuel consumption
+#     Fuel Consumption (L) = Distance / Fuel Efficiency (km/L) 
+#     (Or adjust units as needed.)
+merged_data['fuel_consumption'] = (
+    merged_data['distance'] / merged_data['combined_fuel_efficiency']
+)
 
-# ================================
-# 📊 Prepare Features for Model Training
-# ================================
 
-# Select relevant input features (X) and target variables (y)
+# 4. Select Features (X) and Targets (y)
+
+
+# 4.1 Features (X) - Adjust columns based on your dataset
 X = merged_data[['distance', 'normalized_traffic_severity', 'combined_fuel_efficiency']]
-y_fuel = merged_data['fuel_consumption']   # Target variable for fuel consumption
-y_co2 = merged_data['co2_emissions']       # Target variable for CO₂ emissions
 
-# ================================
-# 🔀 Split Data into Training & Testing Sets
-# ================================
+# 4.2 Targets
+y_fuel = merged_data['fuel_consumption']  # Predict fuel consumption
+y_co2 = merged_data['co2_emissions']      # Predict CO₂ emissions
 
-# 80% training, 20% testing split for **fuel consumption**
+
+# 5. Split Data into Training & Testing Sets
+
+
+# For Fuel Consumption
 X_train, X_test, y_fuel_train, y_fuel_test = train_test_split(
-    X, y_fuel, test_size=0.2, random_state=42
+    X, y_fuel, 
+    test_size=0.2, 
+    random_state=42
 )
 
-# 80% training, 20% testing split for **CO₂ emissions**
+# For CO₂ Emissions
+# Using the same random_state and test_size ensures the same split indices.
+# We only need y_co2 here; the X split is the same shape but not used.
 _, _, y_co2_train, y_co2_test = train_test_split(
-    X, y_co2, test_size=0.2, random_state=42
+    X, y_co2, 
+    test_size=0.2, 
+    random_state=42
 )
 
-# ================================
-# 📏 Normalize Data (Feature Scaling)
-# ================================
 
-# Use **separate scalers** for fuel consumption and CO₂ emissions
+# 6. Scale the Feature Data
+
+# We use separate scalers for each model.
+
+# 6.1 Fuel Model Scaler
 scaler_fuel = StandardScaler()
 X_train_fuel = scaler_fuel.fit_transform(X_train)
 X_test_fuel = scaler_fuel.transform(X_test)
 
+# 6.2 CO₂ Model Scaler
 scaler_co2 = StandardScaler()
 X_train_co2 = scaler_co2.fit_transform(X_train)
 X_test_co2 = scaler_co2.transform(X_test)
 
-# ================================
-# 🤖 Define a Reusable Model Structure
-# ================================
 
-def build_model():
-    """Creates a neural network model for fuel & CO₂ prediction"""
+# 7. Define a Reusable Keras Model
+
+
+def build_model(input_dim):
+    """
+    Creates a simple feedforward neural network for regression tasks.
+
+    Args:
+        input_dim (int): Number of input features.
+
+    Returns:
+        model (Sequential): Compiled Keras model.
+    """
     model = Sequential([
-        Dense(64, activation='relu', input_shape=(X_train.shape[1],)),  # First hidden layer
-        Dropout(0.3),  # Prevent overfitting
-        Dense(32, activation='relu'),  # Second hidden layer
+        Dense(64, activation='relu', input_shape=(input_dim,)),  # Hidden layer 1
         Dropout(0.3),
-        Dense(1)  # Output layer for regression (single numerical value)
+        Dense(32, activation='relu'),                           # Hidden layer 2
+        Dropout(0.3),
+        Dense(1)  # Single output for regression
     ])
+
+    # Compile the model
     model.compile(
         optimizer=Adam(learning_rate=0.001), 
-        loss='mse',  # Mean Squared Error (MSE) for regression problems
-        metrics=['mse']
+        loss='mse',      # Mean Squared Error
+        metrics=['mse']  # Track MSE as a metric
     )
     return model
 
-# ================================
-# 🚀 Train Fuel Consumption Model
-# ================================
+
+# 8. Train the Fuel Consumption Model
+
 
 print("Training Fuel Consumption Model...")
-model_fuel = build_model()
+model_fuel = build_model(input_dim=X_train_fuel.shape[1])
 history_fuel = model_fuel.fit(
-    X_train_fuel, y_fuel_train, 
-    epochs=50, batch_size=32, 
-    validation_split=0.2
+    X_train_fuel, y_fuel_train,
+    validation_split=0.2,  # 20% of training set for validation
+    epochs=50,
+    batch_size=32,
+    verbose=1
 )
 
-# ================================
-# 🌍 Train CO₂ Emissions Model
-# ================================
 
-print("Training CO₂ Emissions Model...")
-model_co2 = build_model()
+# 9. Train the CO₂ Emissions Model
+
+
+print("\nTraining CO₂ Emissions Model...")
+model_co2 = build_model(input_dim=X_train_co2.shape[1])
 history_co2 = model_co2.fit(
-    X_train_co2, y_co2_train, 
-    epochs=50, batch_size=32, 
-    validation_split=0.2
+    X_train_co2, y_co2_train,
+    validation_split=0.2,
+    epochs=50,
+    batch_size=32,
+    verbose=1
 )
 
-# ================================
-# 🏁 Evaluate Model Performance
-# ================================
 
-fuel_mse = model_fuel.evaluate(X_test_fuel, y_fuel_test, verbose=0)[1]
-print(f"🚗 Fuel Consumption Model MSE: {fuel_mse}")
+# 10. Evaluate Model Performance
 
-co2_mse = model_co2.evaluate(X_test_co2, y_co2_test, verbose=0)[1]
-print(f"🌍 CO₂ Emissions Model MSE: {co2_mse}")
 
-# ================================
-# 💾 Save Trained Models
-# ================================
+# Fuel Model
+fuel_loss, fuel_mse = model_fuel.evaluate(X_test_fuel, y_fuel_test, verbose=0)
+print(f"\nFuel Consumption Model MSE: {fuel_mse:.4f}")
 
-# Save the trained models for later use in API integration
+# CO₂ Model
+co2_loss, co2_mse = model_co2.evaluate(X_test_co2, y_co2_test, verbose=0)
+print(f"CO₂ Emissions Model MSE: {co2_mse:.4f}")
+
+
+# 11. Save Trained Models
+
+
 model_fuel.save('../models/fuel_consumption_model.h5')
 model_co2.save('../models/co2_emissions_model.h5')
 
-print("✅ Models saved successfully!")
+print("\n✅ Models saved successfully!")
