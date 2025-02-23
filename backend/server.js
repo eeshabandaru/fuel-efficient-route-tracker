@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const authRoutes = require('./src/routes/authRoutes'); 
+const routeRoutes = require('./src/routes/routeRoutes');
 
 console.log('MONGODB_URI is:', process.env.MONGODB_URI);
 
@@ -17,6 +18,8 @@ app.use(express.json());
 
 // Routes
 app.use(authRoutes);
+
+app.use('/route', routeRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 3000;
