@@ -6,7 +6,6 @@ from tensorflow.keras.models import load_model
 app = Flask(__name__)
 
 # Load the Pre-trained Models
-# Update the paths if needed based on your folder structure.
 fuel_model = load_model('models/fuel_consumption_model.h5')
 co2_model = load_model('models/co2_emissions_model.h5')
 
@@ -14,17 +13,15 @@ co2_model = load_model('models/co2_emissions_model.h5')
 @app.route('/predict', methods=['POST'])
 def predict():
     """
-    This endpoint expects a JSON payload with the following keys:
-      - distance (float): The route's distance.
-      - normalized_traffic_severity (float): Traffic severity scaled from 0 to 1.
-      - combined_fuel_efficiency (float): A weighted average of city and highway fuel efficiency.
-    
+    This endpoint expects a JSON payload with:
+      - distance (float)
+      - normalized_traffic_severity (float)
+      - combined_fuel_efficiency (float)
     It returns:
-      - fuel_consumption: Estimated fuel consumption for the route.
+      - fuel_consumption: Estimated fuel consumption.
       - co2_emissions: Estimated CO₂ emissions.
     """
     data = request.get_json(force=True)
-
     try:
         distance = float(data['distance'])
         normalized_traffic_severity = float(data['normalized_traffic_severity'])
@@ -34,10 +31,7 @@ def predict():
             'error': 'Invalid input. Provide distance, normalized_traffic_severity, and combined_fuel_efficiency as numbers.'
         }), 400
 
-    # Prepare the input array for the models
     input_features = np.array([[distance, normalized_traffic_severity, combined_fuel_efficiency]])
-
-    # Get predictions from both models
     fuel_prediction = fuel_model.predict(input_features)
     co2_prediction = co2_model.predict(input_features)
 
@@ -48,6 +42,5 @@ def predict():
     
     return jsonify(response)
 
-# Run the Flask App
 if __name__ == '__main__':
     app.run(debug=True)
